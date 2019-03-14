@@ -3,9 +3,10 @@ import os
 import cv2
 
 #Utilities and pre-processing
-color_convert_type = 'lab'
-init_type = 'content'
+color_convert_type = 'yuv'
+init_type = 'random'
 noise_ratio = 1.0
+seed = 1
 
 def get_content_image(content_name):
     path = os.path.join('./contents/', content_name)
@@ -96,7 +97,7 @@ def get_init_image(content_img, style_imgs):
         return init_img
 
 def get_noise_image(noise_ratio, content_img):
-    np.random.seed(args.seed)
+    np.random.seed(seed)
     noise_img = np.random.uniform(-20., 20., content_img.shape).astype(np.float32)
     img = noise_ratio * noise_img + (1.-noise_ratio) * content_img
     return img

@@ -7,16 +7,16 @@ from losses import *
 
 verbose = True
 print_iterations = 50
-original_colors = True
-optimizer = 'adam'
-max_iterations = 1000
-learning_rate = 1e0
-style_mask = True
+original_colors = False
+opt = 'adam'
+max_iterations = 700
+learning_rate = 2e0
+style_mask = False
 
 #Weights for the loss functions
-content_weight = 5e0
-style_weight = 1e4
-tv_weight = 1e-3
+content_weight = 5e-2#0
+style_weight = 2e5#1e4
+tv_weight = 5e-2#1e-3
 
 def render_image(content_name, style_names):
     content_img = get_content_image(content_name)
@@ -59,9 +59,9 @@ def stylize(content_img, style_imgs, init_img, frame=None):
         # optimization algorithm
         optimizer = get_optimizer(L_total)
 
-        if optimizer == 'adam':
+        if opt == 'adam':
             minimize_with_adam(sess, net, optimizer, init_img, L_total)
-        elif optimizer == 'lbfgs':
+        elif opt == 'lbfgs':
             minimize_with_lbfgs(sess, net, optimizer, init_img)
         
         output_img = sess.run(net['input'])
@@ -72,9 +72,9 @@ def stylize(content_img, style_imgs, init_img, frame=None):
         write_image_output(output_img, content_img, style_imgs, init_img)
 
 def get_optimizer(loss):
-    if optimizer == 'lbfgs':
+    if opt == 'lbfgs':
         optimizer = tf.contrib.opt.ScipyOptimizerInterface(loss, method='L-BFGS-B', options={'maxiter': max_iterations, 'disp': print_iterations})
-    elif optimizer == 'adam':
+    elif opt == 'adam':
         optimizer = tf.train.AdamOptimizer(learning_rate)
     return optimizer
 

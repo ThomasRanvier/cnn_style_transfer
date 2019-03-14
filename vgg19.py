@@ -4,6 +4,7 @@ import tensorflow as tf
 import scipy.io
 
 verbose = True
+pooling_type = 'avg'
 
 def build_model(input_img):
     if verbose: print('\nBUILDING VGG-19 NETWORK')
@@ -76,9 +77,9 @@ def relu_layer(layer_name, layer_input, b):
     return relu
 
 def pool_layer(layer_name, layer_input):
-    if args.pooling_type == 'avg':
+    if pooling_type == 'avg':
         pool = tf.nn.avg_pool(layer_input, ksize=[1, 2, 2, 1], strides=[1, 2, 2, 1], padding='SAME')
-    elif args.pooling_type == 'max':
+    elif pooling_type == 'max':
         pool = tf.nn.max_pool(layer_input, ksize=[1, 2, 2, 1], strides=[1, 2, 2, 1], padding='SAME')
     if verbose: print('--{}   | shape={}'.format(layer_name, pool.get_shape()))
     return pool
