@@ -29,7 +29,11 @@ def get_style_images(content_img, style_names):
 
 def write_image(path, img):
     img = postprocess(img)
-    cv2.imwrite(path, img)
+    cv2.imwrite(path + 'png', img)
+
+def write_images(path, imgs):
+    for i in range(len(imgs)):
+        write_image(path + '_' + str(i), imgs[i])
 
 def preprocess(img):
     imgpre = np.copy(img)
@@ -49,7 +53,7 @@ def postprocess(img):
     # rgb to bgr
     imgpost = imgpost[...,::-1]
     return imgpost
-
+"""
 def write_image_output(output_img, content_img, style_imgs, init_img):
     out_dir = './outputs/'
     img_path = os.path.join(out_dir, 'result.png')
@@ -62,7 +66,7 @@ def write_image_output(output_img, content_img, style_imgs, init_img):
     for i in range(len(style_imgs)):
         path = os.path.join(out_dir, 'style_' + str(i) + '.png')
         write_image(path, style_imgs[i])
-
+"""
 def convert_to_original_colors(content_img, stylized_img):
     content_img  = postprocess(content_img)
     stylized_img = postprocess(stylized_img)

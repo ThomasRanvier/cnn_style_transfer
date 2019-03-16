@@ -12,6 +12,7 @@ opt = 'adam'
 max_iterations = 700
 learning_rate = 2e0
 style_mask = False
+out_dir = './outputs/'
 
 #Weights for the loss functions
 content_weight = 5e-2#0
@@ -30,6 +31,9 @@ def render_image(content_name, style_names):
         print('Single image elapsed time: {}'.format(tock - tick))
 
 def stylize(content_img, style_imgs, init_img, frame=None):
+    write_image(out_dir + 'init', init_img)
+    write_images(out_dir + 'style', style_imgs)
+    write_images(out_dir + 'content', content_img)
     with tf.Session() as sess:
         # setup network
         net = build_model(content_img)
@@ -69,7 +73,7 @@ def stylize(content_img, style_imgs, init_img, frame=None):
         if original_colors:
             output_img = convert_to_original_colors(np.copy(content_img), output_img)
 
-        write_image_output(output_img, content_img, style_imgs, init_img)
+        write_image('output_final', output_img)
 
 def get_optimizer(loss):
     if opt == 'lbfgs':
@@ -96,7 +100,12 @@ def minimize_with_adam(sess, net, optimizer, init_img, loss):
     iterations = 0
     while (iterations < max_iterations):
         sess.run(train_op)
-        if iterations % print_iterations == 0 and verbose:
-            curr_loss = loss.eval()
-            print("At iterate {}\tf=  {}".format(iterations, curr_loss))
+        if iterations % print_iterations == 0:
+            if verbose:
+                curr_loss = loss.eval()
+                print("At iterate {}\tf=  {}".format(iterations, curr_loss))
+            output_img = sess.run(net['input'])
+            if original_colors:
+                output_img = convert_to_original_colors(np.copy(content_img), output_img)
+            write_image('output_ite_' + str(iterations), output_img)
         iterations += 1
