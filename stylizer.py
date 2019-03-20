@@ -10,14 +10,14 @@ print_iterations = 50
 original_colors = False
 opt = 'adam'
 max_iterations = 700
-learning_rate = 2e0
+learning_rate = 1e0
 style_mask = False
 out_dir = './outputs/'
 
 #Weights for the loss functions
-content_weight = 5e-2#0
-style_weight = 2e5#1e4
-tv_weight = 5e-2#1e-3
+content_weight = 1.0#5e0
+style_weight = 5000.0#1e4
+tv_weight = 0.1#1e-3
 
 def render_image(content_name, style_names):
     content_img = get_content_image(content_name)
@@ -33,7 +33,7 @@ def render_image(content_name, style_names):
 def stylize(content_img, style_imgs, init_img, frame=None):
     write_image(out_dir + 'init', init_img)
     write_images(out_dir + 'style', style_imgs)
-    write_images(out_dir + 'content', content_img)
+    write_image(out_dir + 'content', content_img)
     with tf.Session() as sess:
         # setup network
         net = build_model(content_img)
@@ -73,7 +73,7 @@ def stylize(content_img, style_imgs, init_img, frame=None):
         if original_colors:
             output_img = convert_to_original_colors(np.copy(content_img), output_img)
 
-        write_image('output_final', output_img)
+        write_image(out_dir + 'output_final', output_img)
 
 def get_optimizer(loss):
     if opt == 'lbfgs':
@@ -107,5 +107,5 @@ def minimize_with_adam(sess, net, optimizer, init_img, loss):
             output_img = sess.run(net['input'])
             if original_colors:
                 output_img = convert_to_original_colors(np.copy(content_img), output_img)
-            write_image('output_ite_' + str(iterations), output_img)
+            write_image(out_dir + 'output_ite_' + str(iterations), output_img)
         iterations += 1

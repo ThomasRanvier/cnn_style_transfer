@@ -29,7 +29,7 @@ def get_style_images(content_img, style_names):
 
 def write_image(path, img):
     img = postprocess(img)
-    cv2.imwrite(path + 'png', img)
+    cv2.imwrite(path + '.png', img)
 
 def write_images(path, imgs):
     for i in range(len(imgs)):
