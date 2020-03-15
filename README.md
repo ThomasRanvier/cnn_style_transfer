@@ -4,7 +4,7 @@ My PyTorch implementation of [Perceptual Losses for Real-Time Style Transfer
 and Super-Resolution](https://arxiv.org/pdf/1603.08155.pdf)
 
 Johnson et al. use two networks for their style transfer model:
-* A *loss network* (VGG-16), which is pre-trained for image classification and defines the perceptual loss that measures perceptual differences in content and style between images. This network is fixed during training.
+* A *loss network* (VGG-16), which is pre-trained for image classification and defines the perceptual loss that measures perceptual differences in content and style between images. This network is fixed during training (all requires_grad are changed to False).
 * An *image transformation network*, which is an auto-encoder that transform an input image into a stylized output image.
 Network exact architecture can be found [here](https://cs.stanford.edu/people/jcjohns/papers/fast-style/fast-style-supp.pdf).
 
@@ -21,3 +21,5 @@ Instance Normalization gives better results than a simple batch norm: [Instance 
 I use reflection padding since it gives cleaner results.
 
 I use an upsampling followed by a conv2d instead of a convTranspose2d, which should [give results with less artifacts](https://distill.pub/2016/deconv-checkerboard/).
+
+Notebooks in the src folder are used to test that all functionalities work as intended and the *preprocess* notebook is used to delete the grayscaled images from the dataset.
