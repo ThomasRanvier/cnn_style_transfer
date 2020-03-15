@@ -20,9 +20,11 @@ class TransferNet(nn.Module):
         ## (128, 64, 64)
         self._res_5 = ResidualBlock(128, 3, 1, (1, 1, 1, 1))
         ## (128, 64, 64)
-        self._conv_4 = GenericLayer(nn.ConvTranspose2d(128, 64, 3, 2, output_padding=1), 64, (-1, 0, -1, 0), nn.ReLU())
+        self._conv_4 = GenericLayer(UpsampleConvLayer(128, 64, 3, 1, 2), 64, (0, 0, 0, 0), nn.ReLU())
+        #self._conv_4 = GenericLayer(nn.ConvTranspose2d(128, 64, 3, 2, output_padding=1), 64, (-1, 0, -1, 0), nn.ReLU())
         ## (64, 128, 128)
-        self._conv_5 = GenericLayer(nn.ConvTranspose2d(64, 32, 3, 2, output_padding=1), 32, (-1, 0, -1, 0), nn.ReLU())
+        self._conv_5 = GenericLayer(UpsampleConvLayer(64, 32, 3, 1, 2), 32, (0, 0, 0, 0), nn.ReLU())
+        #self._conv_5 = GenericLayer(nn.ConvTranspose2d(64, 32, 3, 2, output_padding=1), 32, (-1, 0, -1, 0), nn.ReLU())
         ## (32, 256, 256)
         self._conv_6 = GenericLayer(nn.Conv2d(32, 3, 9, 1), 3, (4, 4, 4, 4), nn.Sigmoid())
         ## (3, 256, 256)
@@ -57,8 +59,8 @@ class GenericLayer(nn.Module):
         super(GenericLayer, self).__init__()
         self._act = activation
         self._layer = layer
-        self._norm = nn.BatchNorm2d(out_channels)
-        self._pad = nn.ZeroPad2d(padding)
+        self._norm = nn.InstanceNorm2d(out_channels, affine=True)
+        self._pad = nn.ReflectionPad2d(padding)
 
     def forward(self, x):
         x = self._pad(x)
@@ -66,4 +68,17 @@ class GenericLayer(nn.Module):
         x = self._norm(x)
         if self._act is not None:
             x = self._act(x)
+        return x
+
+class UpsampleConvLayer(nn.Module):
+    def __init__(self, in_channels, out_channels, kernel_size, stride, scale_factor):
+        super(UpsampleConvLayer, self).__init__()
+        self._scale_factor = scale_factor
+        self._reflection_pad = nn.ReflectionPad2d(kernel_size // 2)
+        self._conv = nn.Conv2d(in_channels, out_channels, kernel_size, stride)
+
+    def forward(self, x):
+        x = nn.functional.interpolate(x, mode='nearest', scale_factor=self._scale_factor)
+        x = self._reflection_pad(x)
+        x = self._conv(x)
         return x

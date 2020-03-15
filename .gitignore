@@ -3,4 +3,6 @@
 *.pyc
 *.mat
 __pycache__
+__init__.py
 coco_data
+coco_grayscales
