@@ -2,3 +2,5 @@
 .ipynb_checkpoints
 *.pyc
 *.mat
+__pycache__
+coco_data
