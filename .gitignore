@@ -6,3 +6,4 @@ __pycache__
 __init__.py
 coco_data
 coco_grayscales
+trained_transfer_models
